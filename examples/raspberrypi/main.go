@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/behling_stefan/ILI9341_GoLangLibrary/ili9341_golangLibrary"
+	"github.com/behling_stefan/ILI9341_GoLangLibrary/ili9341"
 	"periph.io/x/conn/v3/gpio"
 	"periph.io/x/conn/v3/gpio/gpioreg"
 	"periph.io/x/conn/v3/physic"
