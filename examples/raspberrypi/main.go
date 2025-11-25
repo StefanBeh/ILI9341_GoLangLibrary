@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/adafruit/ILI9341_GoLang"
-	"periph.io/x/conn/v3/driver"
 	"periph.io/x/conn/v3/gpio"
 	"periph.io/x/conn/v3/gpio/gpioreg"
 	"periph.io/x/conn/v3/spi"
@@ -16,8 +14,8 @@ import (
 
 const (
 	// ILI9341 colors
-	ILI9341_BLACK   = 0x0000
-	ILI9341_RED     = 0xF800
+	ILI9341_BLACK = 0x0000
+	ILI9341_RED   = 0xF800
 )
 
 // PeriphPin is an implementation of the Pin interface using periph.io.
@@ -34,6 +32,16 @@ func (p *PeriphPin) Set(high bool) {
 	}
 }
 
+// PeriphSPI is an implementation of the SPI interface using periph.io.
+type PeriphSPI struct {
+	conn spi.Conn
+}
+
+// Tx sends and receives data.
+func (s *PeriphSPI) Tx(w, r []byte) error {
+	return s.conn.Tx(w, r)
+}
+
 func main() {
 	// Make sure periph is initialized.
 	if _, err := host.Init(); err != nil {
@@ -47,13 +55,9 @@ func main() {
 	}
 	defer p.Close()
 
-	// Set the SPI frequency.
-	if err := p.LimitSpeed(40 * 1000 * 1000); err != nil {
-		log.Fatal(err)
-	}
-
-	// Set the SPI mode.
-	if err := p.SetMode(spi.Mode0); err != nil {
+	// Connect to the SPI device.
+	conn, err := p.Connect(40*1000*1000, spi.Mode0, 8)
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -69,7 +73,7 @@ func main() {
 	}
 
 	// Create the ILI9341 device.
-	dev, err := ili9341.New(p, &PeriphPin{pin: dcPin}, &PeriphPin{pin: rstPin})
+	dev, err := ili9341.New(&PeriphSPI{conn: conn}, &PeriphPin{pin: dcPin}, &PeriphPin{pin: rstPin})
 	if err != nil {
 		log.Fatal(err)
 	}
