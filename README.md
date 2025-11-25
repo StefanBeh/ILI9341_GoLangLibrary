@@ -1,28 +1,90 @@
-# Adafruit ILI9341 Arduino Library [![Build Status](https://github.com/adafruit/Adafruit_ILI9341/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_ILI9341/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_ILI9341/html/index.html)
+# ILI9341 GoLang Library
 
-This is a library for the Adafruit ILI9341 display products
+This repository contains a GoLang library for controlling ILI9341 TFT displays. It is a rewrite and adaptation of the popular Adafruit ILI9341 Python library, tailored for Go applications, particularly on single-board computers like the Raspberry Pi.
 
-This library works with the Adafruit 2.8" Touch Shield V2 (SPI)
-  * http://www.adafruit.com/products/1651
+## Features
 
-Adafruit 2.4" TFT LCD with Touchscreen Breakout w/MicroSD Socket - ILI9341
-  * https://www.adafruit.com/product/2478
+- Basic display initialization and control.
+- Drawing primitives (points, lines, rectangles, circles, etc.).
+- Text rendering.
+- Image display.
 
-2.8" TFT LCD with Touchscreen Breakout Board w/MicroSD Socket - ILI9341
-  * https://www.adafruit.com/product/1770
+## Installation
 
-2.2" 18-bit color TFT LCD display with microSD card breakout - ILI9340
-  * https://www.adafruit.com/product/1480
+To use this library, you'll need to have Go installed on your system.
 
-TFT FeatherWing - 2.4" 320x240 Touchscreen For All Feathers 
-  * https://www.adafruit.com/product/3315
+```bash
+go get github.com/behling_stefan/ILI9341_GoLangLibrary/ili9341_golangLibrary
+```
 
-Check out the links above for our tutorials and wiring diagrams.
-These displays use SPI to communicate, 4 or 5 pins are required
-to interface (RST is optional).
+## Wiring
 
-**BMP image-loading examples have been moved to the Adafruit_ImageReader library:**
-https://github.com/adafruit/Adafruit_ImageReader
+For detailed wiring instructions to connect your ILI9341 display to a Raspberry Pi, please refer to the [wiring guide](wiring.md).
+
+## Usage
+
+An example of how to use this library on a Raspberry Pi can be found in the `examples/raspberrypi` directory.
+
+```go
+// See examples/raspberrypi/main.go for a complete example
+package main
+
+import (
+	"log"
+	"time"
+
+	"github.com/behling_stefan/ILI9341_GoLangLibrary/ili9341_golangLibrary"
+	"periph.io/x/conn/v3/physic"
+	"periph.io/x/conn/v3/spi"
+	"periph.io/x/conn/v3/spi/spireg"
+	"periph.io/x/host/v3"
+)
+
+func main() {
+	// Initialize periph.io host
+	if _, err := host.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Open SPI port
+	p, err := spireg.Open("/dev/spidev0.0")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer p.Close()
+
+	// Configure SPI
+	conn, err := p.Connect(physic.MegaHertz, spi.Mode3, 8)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create ILI9341 driver
+	dcPin := "GPIO24" // Data/Command pin
+	rstPin := "GPIO25" // Reset pin
+	display, err := ili9341_golangLibrary.NewILI9341(conn, dcPin, rstPin)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Initialize display
+	display.Init()
+	display.SetRotation(ili9341_golangLibrary.Rotation90)
+	display.FillScreen(ili9341_golangLibrary.Black)
+
+	// Draw something
+	display.DrawString(10, 10, "Hello, Go!", ili9341_golangLibrary.White, ili9341_golangLibrary.Font8x8)
+	display.DrawRect(5, 5, 100, 50, ili9341_golangLibrary.Red)
+
+	time.Sleep(5 * time.Second)
+}
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to open issues or submit pull requests.
+
+## License
 
 Adafruit invests time and resources providing this open source code,
 please support Adafruit and open-source hardware by purchasing
@@ -30,9 +92,3 @@ products from Adafruit!
 
 Written by Limor Fried/Ladyada for Adafruit Industries.
 MIT license, all text above must be included in any redistribution
-
-To download. click the DOWNLOADS button in the top right corner, rename the uncompressed folder Adafruit_ILI9341. Check that the Adafruit_ILI9341 folder contains Adafruit_ILI9341.cpp and Adafruit_ILI9341.
-
-Place the Adafruit_ILI9341 library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE
-
-Also requires the [Adafruit_GFX](https://github.com/adafruit/Adafruit-GFX-Library) library for Arduino.
