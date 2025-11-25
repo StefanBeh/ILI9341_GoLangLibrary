@@ -7,6 +7,7 @@ import (
 	"github.com/adafruit/ILI9341_GoLang"
 	"periph.io/x/conn/v3/gpio"
 	"periph.io/x/conn/v3/gpio/gpioreg"
+	"periph.io/x/conn/v3/physic"
 	"periph.io/x/conn/v3/spi"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/host/v3"
@@ -56,7 +57,7 @@ func main() {
 	defer p.Close()
 
 	// Connect to the SPI device.
-	conn, err := p.Connect(40*1000*1000, spi.Mode0, 8)
+	conn, err := p.Connect(40*physic.MegaHertz, spi.Mode0, 8)
 	if err != nil {
 		log.Fatal(err)
 	}
