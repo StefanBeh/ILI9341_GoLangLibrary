@@ -58,7 +58,7 @@ func main() {
 	defer p.Close()
 
 	// Connect to the SPI device.
-	conn, err := p.Connect(40*physic.MegaHertz, spi.Mode0, 8)
+	conn, err := p.Connect(10*physic.MegaHertz, spi.Mode0, 8)
 	if err != nil {
 		log.Fatal(err)
 	}
