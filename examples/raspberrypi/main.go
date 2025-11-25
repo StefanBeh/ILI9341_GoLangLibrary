@@ -17,6 +17,7 @@ const (
 	// ILI9341 colors
 	ILI9341_BLACK = 0x0000
 	ILI9341_RED   = 0xF800
+	ILI9341_WHITE = 0xFFFF
 )
 
 // PeriphPin is an implementation of the Pin interface using periph.io.
@@ -84,15 +85,72 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Set rotation to landscape.
+	if err := dev.SetRotation(1); err != nil {
+		log.Fatal(err)
+	}
+
 	// Fill the screen with black.
-	if err := dev.FillRectangle(0, 0, ili9341.TFTWIDTH, ili9341.TFTHEIGHT, ILI9341_BLACK); err != nil {
+	if err := dev.FillRectangle(0, 0, ili9341.TFTHEIGHT, ili9341.TFTWIDTH, ILI9341_BLACK); err != nil {
 		log.Fatal(err)
 	}
 
-	// Draw a red rectangle.
-	if err := dev.FillRectangle(10, 20, 50, 30, ILI9341_RED); err != nil {
+	// Draw a table
+	// horizontal lines
+	if err := dev.DrawLine(0, 40, 320, 40, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawLine(0, 80, 320, 80, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawLine(0, 120, 320, 120, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawLine(0, 160, 320, 160, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawLine(0, 200, 320, 200, ILI9341_WHITE); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Drew a red rectangle on the screen.")
+	// vertical lines
+	if err := dev.DrawLine(100, 0, 100, 240, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawLine(220, 0, 220, 240, ILI9341_WHITE); err != nil {
+		log.Fatal(err)
+	}
+
+	// Draw text
+	if err := dev.DrawString(10, 10, "Header 1", ILI9341_WHITE, ILI9341_BLACK, 2); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(110, 10, "Header 2", ILI9341_WHITE, ILI9341_BLACK, 2); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(230, 10, "Header 3", ILI9341_WHITE, ILI9341_BLACK, 2); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := dev.DrawString(10, 50, "Row 1, Col 1", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(110, 50, "Row 1, Col 2", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(230, 50, "Row 1, Col 3", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := dev.DrawString(10, 90, "Row 2, Col 1", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(110, 90, "Row 2, Col 2", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+	if err := dev.DrawString(230, 90, "Row 2, Col 3", ILI9341_WHITE, ILI9341_BLACK, 1); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Drew a table on the screen.")
 }

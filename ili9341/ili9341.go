@@ -269,3 +269,60 @@ func (d *ILI9341) FillRectangle(x, y, w, h uint16, color uint16) error {
 	}
 	return nil
 }
+
+// DrawPixel draws a single pixel at a given position and color.
+func (d *ILI9341) DrawPixel(x, y int16, color uint16) error {
+	if x < 0 || x >= int16(d.width) || y < 0 || y >= int16(d.height) {
+		return nil
+	}
+	if err := d.SetAddrWindow(uint16(x), uint16(y), 1, 1); err != nil {
+		return err
+	}
+	d.dc.Set(true)
+	c := []byte{byte(color >> 8), byte(color)}
+	return d.spi.Tx(c, nil)
+}
+
+// DrawLine draws a line between two points.
+func (d *ILI9341) DrawLine(x0, y0, x1, y1 int16, color uint16) error {
+	steep := abs(y1-y0) > abs(x1-x0)
+	if steep {
+		x0, y0 = y0, x0
+		x1, y1 = y1, x1
+	}
+	if x0 > x1 {
+		x0, x1 = x1, x0
+		y0, y1 = y1, y0
+	}
+	dx := x1 - x0
+	dy := abs(y1 - y0)
+	err := int16(dx / 2)
+	ystep := int16(1)
+	if y0 > y1 {
+		ystep = -1
+	}
+	for ; x0 <= x1; x0++ {
+		if steep {
+			if err := d.DrawPixel(y0, x0, color); err != nil {
+				return err
+			}
+		} else {
+			if err := d.DrawPixel(x0, y0, color); err != nil {
+				return err
+			}
+		}
+		err -= dy
+		if err < 0 {
+			y0 += ystep
+			err += dx
+		}
+	}
+	return nil
+}
+
+func abs(x int16) int16 {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
