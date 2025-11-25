@@ -261,16 +261,21 @@ func (d *ILI9341) FillRectangle(x, y, w, h uint16, color uint16) error {
 		return err
 	}
 	d.dc.Set(true)
-	c := []byte{byte(color >> 8), byte(color)}
-	for i := 0; i < int(w*h); i++ {
-		if err := d.spi.Tx(c, nil); err != nil {
+
+	row := make([]byte, w*2)
+	for i := uint16(0); i < w; i++ {
+		row[i*2] = byte(color >> 8)
+		row[i*2+1] = byte(color)
+	}
+
+	for i := uint16(0); i < h; i++ {
+		if err := d.spi.Tx(row, nil); err != nil {
 			return err
 		}
 	}
-	return nil
-}
 
-// DrawPixel draws a single pixel at a given position and color.
+	return nil
+}// DrawPixel draws a single pixel at a given position and color.
 func (d *ILI9341) DrawPixel(x, y int16, color uint16) error {
 	if x < 0 || x >= int16(d.width) || y < 0 || y >= int16(d.height) {
 		return nil
