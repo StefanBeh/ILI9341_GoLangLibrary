@@ -64,14 +64,14 @@ func main() {
 	}
 
 	// Get the GPIO pins for DC and RST.
-	dcPin := gpioreg.ByName("GPIO24")
+	dcPin := gpioreg.ByName("GPIO22")
 	if dcPin == nil {
-		log.Fatal("Failed to find GPIO24")
+		log.Fatal("Failed to find GPIO22")
 	}
 
-	rstPin := gpioreg.ByName("GPIO25")
+	rstPin := gpioreg.ByName("GPIO27")
 	if rstPin == nil {
-		log.Fatal("Failed to find GPIO25")
+		log.Fatal("Failed to find GPIO27")
 	}
 
 	// Create the ILI9341 device.
